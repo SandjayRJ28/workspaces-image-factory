@@ -4,6 +4,12 @@ Parameters:
   RepoName:
     Type: String
     Default: workspaces-image-factory
+  RepoOwner:
+    Type: String
+    Default: verticalrelevance
+  GithubToken:
+    Type: String
+    NoEcho: true
   BranchName:
     Type: String
     Default: master
@@ -97,6 +103,7 @@ Resources:
                   - "codepipeline:PutJobFailureResult"
                   - "cloudformation:*"
                   - "codecommit:*"
+                  - "servicecatalog:*"
                 Resource: "*"
               -
                 Action:
@@ -191,14 +198,16 @@ Resources:
           - Name: Commit
             ActionTypeId:
               Category: Source
-              Owner: AWS
-              Provider: CodeCommit
+              Owner: ThirdParty
               Version: 1
+              Provider: GitHub
             OutputArtifacts:
               - Name: SourceOutput
             Configuration:
-              RepositoryName: !Ref RepoName
-              BranchName: !Ref BranchName
+              Owner: !Ref RepoOwner
+              Repo: !Ref RepoName
+              Branch: !Ref BranchName
+              OAuthToken: !Ref GitHubToken
         - Name: BuildWorkspace
           Actions:
           - Name: WorkspaceProvisioning

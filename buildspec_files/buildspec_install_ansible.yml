@@ -15,8 +15,6 @@ phases:
     commands:
       - echo Started on `date`
       - echo Install apps
-      - git config --global credential.helper '!aws codecommit credential-helper $#'
-      - git config --global credential.UseHttpPath true
       - ansible-galaxy install -vvvv -r requirements.yml
       - ansible-playbook playbooks/playbook.yml -i scripts/dyn_inv.py
   post_build:

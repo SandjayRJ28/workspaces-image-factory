@@ -1,2 +1,2 @@
 ---
-- src: git+https://git-codecommit.us-east-1.amazonaws.com/v1/repos/ansible-role-windows-baseline
+- src: https://github.com/VerticalRelevance/ansible-role-windows-baseline
