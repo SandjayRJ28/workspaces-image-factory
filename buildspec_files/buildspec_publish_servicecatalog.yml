@@ -1,0 +1,15 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing pre-reqs
+      - pip3 install boto3
+  build:
+    commands:
+      - echo Started on `date`
+      - echo Publishing to Bundle to Service Catalog...
+      # - python3 scripts/publish_to_servicecatalog.py
+  post_build:
+    commands:
+      - echo completed on `date`

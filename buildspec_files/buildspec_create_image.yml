@@ -1,0 +1,21 @@
+version: 0.2
+
+env:
+  variables:
+    BROWSER: "chrome"
+
+phases:
+  install:
+    runtime-versions:
+        python: 3.7
+    commands:
+      - google-chrome --version
+      - which google-chrome
+      - chromedriver --version
+      - which chromedriver
+      - pip3 install selenium boto3 retry
+
+  build:
+    commands:
+      - echo "Creating Image"
+      - python scripts/selenium_create_image.py

@@ -1,0 +1,7 @@
+.vscode
+.DS_Store
+venv/
+tests/__pycache__
+tests/.pytest_cache
+.pytest_cache
+roles/

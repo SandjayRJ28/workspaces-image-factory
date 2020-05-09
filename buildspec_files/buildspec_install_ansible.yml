@@ -1,0 +1,26 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing Ansible and pre-reqs
+      - pip3 install -r requirements.txt
+      - ansible --version
+  pre_build:
+    commands:
+      - echo Test Ansible connection
+      - echo Run Windows ping
+      - ansible-playbook playbooks/winping.yml -i scripts/dyn_inv.py
+  build:
+    commands:
+      - echo Started on `date`
+      - echo Install apps
+      - git config --global credential.helper '!aws codecommit credential-helper $#'
+      - git config --global credential.UseHttpPath true
+      - ansible-galaxy install -vvvv -r requirements.yml
+      - ansible-playbook playbooks/playbook.yml -i scripts/dyn_inv.py
+  post_build:
+    commands:
+      - echo Running ansible tests
+      - WORKSPACE_IP="$(python scripts/dyn_inv.py --ip win)"
+      - pytest -vvv --hosts="winrm://ansible:${WINRM_PASSWORD}@${WORKSPACE_IP}:5986?no_verify_ssl=true" --disable-warnings tests/test.py

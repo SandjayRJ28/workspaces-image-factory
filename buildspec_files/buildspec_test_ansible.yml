@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing Ansible and pre-reqs
+      - pip3 install -r requirements.txt
+      - ansible --version
+  pre_build:
+    commands:
+      - echo Test Ansible connection
+      - echo Run Windows ping
+      - ansible-playbook playbooks/winping.yml -i scripts/dyn_inv.py
+  build:
+    commands:
+      - echo Started on `date`
+      - echo Run TestInfra tests
+      - WORKSPACE_IP="$(python scripts/dyn_inv.py --ip win)"
+      - echo $WORKSPACE_IP
+      - pytest -vvv --hosts="winrm://ansible:${WINRM_PASSWORD}@${WORKSPACE_IP}:5986?no_verify_ssl=true" --disable-warnings tests/test.py
+  post_build:
+    commands:
+      - echo Ansible Install completed on `date`

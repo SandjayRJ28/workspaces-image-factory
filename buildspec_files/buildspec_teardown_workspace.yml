@@ -1,0 +1,15 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing pre-reqs
+      - pip3 install boto3
+  build:
+    commands:
+      - echo Started on `date`
+      - echo Tearing down workspace...
+      - python3 scripts/teardown_workspace.py
+  post_build:
+    commands:
+      - echo Workspace Teardown completed on `date`

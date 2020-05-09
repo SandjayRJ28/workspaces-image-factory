@@ -1,0 +1,309 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Continuous Delivery CodePipeline that builds and deploys AWS Workspaces Golden Images
+Parameters:
+  RepoName:
+    Type: String
+    Default: workspaces-image-factory
+  BranchName:
+    Type: String
+    Default: master
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    # Add bucket name
+  ManualApprovalStageGroup:
+    Type: "AWS::IAM::Group"
+    Properties:
+      GroupName: ManaulApprovalStageGroup
+      Path: /
+      Policies:
+        -
+          PolicyName: manual-approval-stage-service
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: Deny
+              Action:
+              - codepipeline:PutApprovalResult
+              Resource: "*"
+  WorkspaceServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: cloudformation.amazonaws.com
+          Action: sts:AssumeRole
+      Path: /
+      Policies:
+        -
+          PolicyName: rds-service
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: Allow
+                Action:
+                - "workspaces:*"
+                Resource: "*"
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: codepipeline.amazonaws.com
+          Action: sts:AssumeRole
+      Path: /
+      Policies:
+        -
+          PolicyName: codepipeline-service
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: Allow
+                Action: "*"
+                Resource: "*"
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: codebuild.amazonaws.com
+          Action: sts:AssumeRole
+      Path: /
+      Policies:
+        -
+          PolicyName: codebuild-workspaces-ssm
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: Allow
+                Action:
+                  - "workspaces:*"
+                  - "ssm:*"
+                  - "s3:*"
+                  - "ec2:*"
+                  - "codepipeline:PutJobSuccessResult"
+                  - "codepipeline:PutJobFailureResult"
+                  - "cloudformation:*"
+                  - "codecommit:*"
+                Resource: "*"
+              -
+                Action:
+                  - "logs:*"
+                Effect: Allow
+                Resource: "arn:aws:logs:*:*:*"
+  SetupWorkspaceProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Description: Codebuild project to set up Workspace
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/python:3.7.1
+      Source:
+        BuildSpec: buildspec_files/buildspec_setup_workstation.yml
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 45
+  TeardownWorkspaceProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Description: Codebuild project to tear down Workspace
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/python:3.7.1
+      Source:
+        BuildSpec: buildspec_files/buildspec_teardown_workspace.yml
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 30
+  PublishToServiceCatalogProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Description: Codebuild project to publish finished bundle to service catalog
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/python:3.7.1
+      Source:
+        BuildSpec: buildspec_files/buildspec_publish_servicecatalog.yml
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 30
+  InstallAnsibleProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Description: Codebuild project to configure Workspace via Ansible
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/python:3.7.1
+      Source:
+        BuildSpec: buildspec_files/buildspec_install_ansible.yml
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 30
+  CreateImageProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Description: Codebuild project to create a Workspace Image via Selenium
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:4.0
+      Source:
+        BuildSpec: buildspec_files/buildspec_create_image.yml
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 120
+  MyCodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      ArtifactStore:
+        Location: !Ref "S3Bucket"
+        Type: S3
+      RoleArn: !GetAtt [CodePipelineRole, Arn]
+      Stages:
+        - Name: Commit
+          Actions:
+          - Name: Commit
+            ActionTypeId:
+              Category: Source
+              Owner: AWS
+              Provider: CodeCommit
+              Version: 1
+            OutputArtifacts:
+              - Name: SourceOutput
+            Configuration:
+              RepositoryName: !Ref RepoName
+              BranchName: !Ref BranchName
+        - Name: BuildWorkspace
+          Actions:
+          - Name: WorkspaceProvisioning
+            RunOrder: 1
+            ActionTypeId:
+              Category: Deploy
+              Owner: AWS
+              Version: 1
+              Provider: CloudFormation
+            Configuration: {
+                "ActionMode": "CREATE_UPDATE",
+                "Capabilities": "CAPABILITY_IAM",
+                "StackName": "WorkspaceBuilder",
+                "TemplatePath": "SourceOutput::cfn_templates/workspace.yml",
+                "TemplateConfiguration": "SourceOutput::cfn_templates/configuration.json",
+                "RoleArn": {
+                    "Fn::GetAtt": [
+                        "WorkspaceServiceRole",
+                        "Arn"
+                    ]
+                },
+                "OutputFileName": "WorkspaceOutput.json"
+            }
+            InputArtifacts:
+              - Name: SourceOutput
+            OutputArtifacts:
+              - Name: WorkspaceOutput
+        - Name: ConfigureWorkspace
+          Actions:
+            - Name: SetupWorkspace
+              RunOrder: 1
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref SetupWorkspaceProject
+              InputArtifacts:
+                - Name: SourceOutput
+            - Name: InstallAnsible
+              RunOrder: 2
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref InstallAnsibleProject
+                EnvironmentVariables: |-
+                  [{
+                    "type":"PARAMETER_STORE",
+                    "name":"WINRM_PASSWORD",
+                    "value":"/ansible-winrm-password"
+                  }]
+              InputArtifacts:
+                - Name: SourceOutput
+            - Name: CreateImage
+              RunOrder: 3
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref CreateImageProject
+                EnvironmentVariables: |-
+                  [{
+                    "type":"PARAMETER_STORE",
+                    "name":"LOGIN_URL",
+                    "value":"/selenium-login-url"
+                  },
+                  {
+                    "type":"PARAMETER_STORE",
+                    "name":"USER_NAME",
+                    "value":"/selenium-user-name"
+                  },
+                  {
+                    "type":"PARAMETER_STORE",
+                    "name":"PASSWORD",
+                    "value":"/selenium-user-password"
+                  }]
+              InputArtifacts:
+                - Name: SourceOutput
+        - Name: Publish
+          Actions:
+            - Name: TeardownWorkspace
+              RunOrder: 1
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref TeardownWorkspaceProject
+              InputArtifacts:
+                - Name: SourceOutput
+            - Name: PublishToServiceCatalog
+              RunOrder: 1
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref PublishToServiceCatalogProject
+              InputArtifacts:
+                - Name: SourceOutput

@@ -1,0 +1,4 @@
+---
+- hosts: win
+  roles:
+    - ansible-role-windows-baseline

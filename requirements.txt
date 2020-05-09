@@ -1,0 +1,6 @@
+ansible
+# behave
+boto3
+configparser
+pywinrm
+testinfra

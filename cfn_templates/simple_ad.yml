@@ -1,0 +1,166 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  DomainName:
+    Description: FQDN of the domain for this directory
+    Type: String
+    Default: corp.verticalrelevance.com
+  SimpleADShortName:
+    Description: Netbios name of the domain for this directory
+    Type: String
+    Default: corp
+  SimpleADPW:
+    Description: Domain admin Password
+    Type: String
+    NoEcho: true
+    Default: Pass@w0rd
+  Size:
+    Description: Size of the Simple AD
+    Type: String
+    AllowedValues:
+      - Small
+      - Large
+    Default: Small
+Mappings:
+  # Hard values for the subnet masks. These masks define
+  # the range of internal IP addresses that can be assigned.
+  # The VPC can have all IP's from 10.0.0.0 to 10.0.255.255
+  # There are four subnets which cover the ranges:
+  #
+  # 10.0.0.0 - 10.0.0.255
+  # 10.0.1.0 - 10.0.1.255
+  # 10.0.2.0 - 10.0.2.255
+  # 10.0.3.0 - 10.0.3.255
+  #
+  # If you need more IP addresses (perhaps you have so many
+  # instances that you run out) then you can customize these
+  # ranges to add more
+  SubnetConfig:
+    VPC:
+      CIDR: '11.0.0.0/16'
+    SubOne:
+      CIDR: '11.0.0.0/24'
+    SubTwo:
+      CIDR: '11.0.1.0/24'
+Resources:
+    VPC:
+        Type: AWS::EC2::VPC
+        Properties:
+            EnableDnsSupport: true
+            EnableDnsHostnames: true
+            CidrBlock: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
+    SubnetOne:
+        Type: AWS::EC2::Subnet
+        Properties:
+            AvailabilityZone:
+                Fn::Select:
+                - 0
+                - Fn::GetAZs: {Ref: 'AWS::Region'}
+            VpcId: !Ref 'VPC'
+            CidrBlock: !FindInMap ['SubnetConfig', 'SubOne', 'CIDR']
+    SubnetTwo:
+        Type: AWS::EC2::Subnet
+        Properties:
+            AvailabilityZone:
+                Fn::Select:
+                - 1
+                - Fn::GetAZs: {Ref: 'AWS::Region'}
+            VpcId: !Ref 'VPC'
+            CidrBlock: !FindInMap ['SubnetConfig', 'SubTwo', 'CIDR']
+    InternetGateway:
+        Type: AWS::EC2::InternetGateway
+    GatewayAttachement:
+        Type: AWS::EC2::VPCGatewayAttachment
+        Properties:
+            VpcId: !Ref 'VPC'
+            InternetGatewayId: !Ref 'InternetGateway'
+    RouteTable:
+        Type: AWS::EC2::RouteTable
+        Properties:
+            VpcId: !Ref 'VPC'
+    Route:
+        Type: AWS::EC2::Route
+        DependsOn: GatewayAttachement
+        Properties:
+            RouteTableId: !Ref 'RouteTable'
+            DestinationCidrBlock: '0.0.0.0/0'
+            GatewayId: !Ref 'InternetGateway'
+    SubnetOneRouteTableAssociation:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId: !Ref SubnetOne
+            RouteTableId: !Ref RouteTable
+    SubnetTwoRouteTableAssociation:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId: !Ref SubnetTwo
+            RouteTableId: !Ref RouteTable
+    RDPSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties: 
+            GroupDescription: 'Security Group to allow RDP connections'
+            GroupName: workspaces-rdp
+            SecurityGroupIngress:
+            - IpProtocol: tcp
+              FromPort: 5985
+              ToPort: 5985
+              CidrIp: 0.0.0.0/0
+            - IpProtocol: tcp
+              FromPort: 5986
+              ToPort: 5986
+              CidrIp: 0.0.0.0/0
+            SecurityGroupEgress:
+            - IpProtocol: -1
+              FromPort: -1
+              ToPort: -1
+              CidrIp: 0.0.0.0/0
+            VpcId: !Ref VPC
+    # Simple AD
+    SimpleAD:
+        Type: 'AWS::DirectoryService::SimpleAD'
+        Properties:
+            CreateAlias: false
+            EnableSso: false
+            Name: !Ref DomainName
+            Password: !Ref SimpleADPW
+            ShortName: !Ref SimpleADShortName
+            Size: !Ref Size
+            VpcSettings:
+                SubnetIds:
+                - !Ref SubnetOne
+                - !Ref SubnetTwo
+                VpcId: !Ref VPC
+    SimpleADSSM:
+      Type: AWS::SSM::Parameter
+      Properties: 
+        Description: SimpleAD Directory ID
+        Name: simplead-directory-id
+        Tier: Standard
+        Type: String
+        Value: !Ref SimpleAD
+Outputs:
+  VpcID:
+    Description: ID of VPC
+    Value: !Ref VPC
+  SubnetOneID:
+    Description: ID of SubnetOne
+    Value: !Ref SubnetOne
+  SubnetTwoID:
+    Description: ID of SubnetTwo
+    Value: !Ref SubnetTwo
+  DirectoryID:
+    Description: ID of the SimpleAD
+    Value: !Ref SimpleAD
+  PrimaryDNS:
+    Description: DNS IPs of the SimpleAD
+    Value: !Select 
+      - '0'
+      - !GetAtt 
+        - SimpleAD
+        - DnsIpAddresses
+  SecondaryDNS:
+    Description: DNS IPs of the SimpleAD
+    Value: !Select 
+      - '1'
+      - !GetAtt 
+        - SimpleAD
+        - DnsIpAddresses
