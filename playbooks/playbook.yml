@@ -2,3 +2,4 @@
 - hosts: win
   roles:
     - ansible-role-windows-baseline
+    - ansible-role-traders

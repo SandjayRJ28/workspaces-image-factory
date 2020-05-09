@@ -1,2 +1,3 @@
 ---
 - src: https://github.com/VerticalRelevance/ansible-role-windows-baseline
+- src: https://github.com/VerticalRelevance/ansible-role-traders
