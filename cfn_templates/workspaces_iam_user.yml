@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  WorkspacesUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: '{{resolve:ssm-secure:selenium-user-name:1}}'
+      LoginProfile:
+        Password: '{{resolve:ssm-secure:selenium-user-password:1}}'
+      Policies:
+        -
+          PolicyName: workspaces-active-directory
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: Allow
+                Action: "ds:*"
+                Resource: "*"
+              -
+                Effect: Allow
+                Action: "workspaces:*"
+                Resource: "*"
+  SeleniumLoginUrl:
+      Type: AWS::SSM::Parameter
+      Properties: 
+        Description: Login URL for IAM User
+        Name: selenium-login-url
+        Tier: Standard
+        Type: String
+        Value: !Sub 'https://${AWS::AccountId}.signin.aws.amazon.com/console'
+
