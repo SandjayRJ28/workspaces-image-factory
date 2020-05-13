@@ -6,15 +6,12 @@ Parameters:
   ADUser:
     Description: ADUser to attach to Workspace
     Type: String
-    Default: ""
   DirectoryId:
     Description: AD Server to get users from
     Type: String
-    Default: ""
   BundleId:
     Description: Bundle to create Workspace from
     Type: String
-    Default: ""
 Resources:
   workspace1:
     Type: "AWS::WorkSpaces::Workspace"
