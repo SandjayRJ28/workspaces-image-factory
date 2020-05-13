@@ -225,7 +225,7 @@ Resources:
                 "StackName": "WorkspaceBuilder",
                 "TemplatePath": "SourceOutput::cfn_templates/workspace.yml",
                 "TemplateConfiguration": "SourceOutput::cfn_templates/configuration.json",
-                "ParameterOverrides": "{\"ADUser\": '{{resolve:ssm:ad-user:1}}',\"BundleId\": '{{resolve:ssm:base-bundle-id:1}}',\"DirectoryId\": '{{resolve:ssm:simplead-directory-id:1}}'}",
+                "ParameterOverrides": "{\"ADUser\": \"{{resolve:ssm:ad-user:1}}\",\"BundleId\": \"{{resolve:ssm:base-bundle-id:1}}\",\"DirectoryId\": \"{{resolve:ssm:simplead-directory-id:1}}\"}",
                 "RoleArn": {
                     "Fn::GetAtt": [
                         "WorkspaceServiceRole",
