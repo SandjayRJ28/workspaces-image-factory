@@ -222,7 +222,7 @@ Resources:
                 "Capabilities": "CAPABILITY_IAM",
                 "StackName": "WorkspaceBuilder",
                 "TemplatePath": "SourceOutput::cfn_templates/workspace.yml",
-                "TemplateConfiguration": "SourceOutput::cfn_templates/configuration.json",
+                "ParameterOverrides": "{\"ADUser\": '{{resolve:ssm-secure:ad-user:1}}',\"BundleId\": '{{resolve:ssm-secure:base-bundle-id:1}}',\"DirectoryId\": '{{resolve:ssm-secure:simplead-directory-id:1}}'}",
                 "RoleArn": {
                     "Fn::GetAtt": [
                         "WorkspaceServiceRole",
@@ -314,5 +314,11 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref PublishToServiceCatalogProject
+                EnvironmentVariables: |-
+                  [{
+                    "type":"PARAMETER_STORE",
+                    "name":"PRODUCT_ID",
+                    "value":"/workspaces/sc-product-id-trader"
+                  }]
               InputArtifacts:
                 - Name: SourceOutput

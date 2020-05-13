@@ -99,10 +99,10 @@ def create_bundle(driver, image_name):
         EC.visibility_of_element_located((By.CSS_SELECTOR, 'div.NILBMCB-j-r div div div:nth-child(4) table tbody tr:nth-child(1) td:nth-child(3) div.NILBMCB-Nb-h.NILBMCB-Nb-e input')))
 
     imageName = driver.find_element_by_css_selector("div.NILBMCB-j-r div div div:nth-child(4) table tbody tr:nth-child(1) td:nth-child(3) div.NILBMCB-Nb-h.NILBMCB-Nb-e input")
-    imageName.send_keys('test-selenium-bundle')
+    imageName.send_keys('test-selenium-bundle-trader')
     driver.implicitly_wait(10)
     description = driver.find_element_by_css_selector("div.NILBMCB-j-r div div div:nth-child(5) table tbody tr:nth-child(1) td:nth-child(3) div.NILBMCB-Nb-h.NILBMCB-Nb-e input")
-    description.send_keys('Test Bundle Description')
+    description.send_keys('Test Trader Bundle')
     driver.implicitly_wait(10)
     select_fr = Select(driver.find_element_by_id("baseWorkspaceBundleListBoxId"))
     select_fr.select_by_value('VALUE')

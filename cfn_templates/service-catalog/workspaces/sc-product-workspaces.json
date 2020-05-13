@@ -1,0 +1,83 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "AWS Workspaces Service Catalog product.",
+  "Parameters": {
+    "PortfolioProvider": {
+      "Type": "String",
+      "Description": "Owner and Distributor Name"
+    },
+    "LaunchConstraintARN": {
+      "Type": "String",
+      "Description": "ARN of the launch constraint role for Workspaces products."
+    },
+    "PortfolioId": {
+      "Type": "String",
+      "Description": "The ServiceCatalog portfolio this product will be attached to."
+    },
+    "RepoRootURL": {
+      "Type": "String",
+      "Description": "Root url for the repo containing the product templates."
+    },
+    "JobRole": {
+      "Type": "String",
+      "Description": "Job Role this Workspaces Application is for",
+      "AllowedValues": ["trader", "developer", "accountant"]
+    }
+  },
+  "Resources": {
+    "scworkspaceproduct": {
+      "Type": "AWS::ServiceCatalog::CloudFormationProduct",
+      "Properties": {
+        "Name": { "Fn::Sub": "AWS Workspaces application for ${JobRole}" },
+        "Description": {
+          "Fn::Sub": "This product creates an Workspaces application for ${JobRole}s."
+        },
+        "Owner": { "Ref": "PortfolioProvider" },
+        "Distributor": { "Ref": "PortfolioProvider" },
+        "SupportDescription": "Operations Team",
+        "SupportEmail": "support@verticalrelevance.com",
+        "AcceptLanguage": "en",
+        "SupportUrl": "http://helpdesk.verticalrelevance.com",
+        "ProvisioningArtifactParameters": [
+          {
+            "Description": "baseline version",
+            "Info": {
+              "LoadTemplateFromURL": {
+                "Fn::Sub": "${RepoRootURL}workspaces/sc-workspaces-ra.json"
+              }
+            },
+            "Name": "v1.0"
+          }
+        ]
+      }
+    },
+    "Associateworkspace": {
+      "Type": "AWS::ServiceCatalog::PortfolioProductAssociation",
+      "Properties": {
+        "PortfolioId": { "Ref": "PortfolioId" },
+        "ProductId": { "Ref": "scworkspaceproduct" }
+      }
+    },
+    "constraintworkspace": {
+      "Type": "AWS::ServiceCatalog::LaunchRoleConstraint",
+      "DependsOn": "Associateworkspace",
+      "Properties": {
+        "PortfolioId": { "Ref": "PortfolioId" },
+        "ProductId": { "Ref": "scworkspaceproduct" },
+        "RoleArn": { "Ref": "LaunchConstraintARN" },
+        "Description": { "Ref": "LaunchConstraintARN" }
+      }
+    },
+    "ProductIdSSM": {
+      "DependsOn": "scworkspaceproduct",
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Description": {"Fn::Sub": "Service Catalog Product ID for ${JobRole} Workspace"},
+        "Name": {"Fn::Sub": "/workspaces/sc-product-id-${JobRole}"},
+        "Tier": "Standard",
+        "Type": "String",
+        "Value": { "Ref": "scworkspaceproduct"}
+      }
+    }
+  }
+}
