@@ -13,8 +13,6 @@ Parameters:
   BranchName:
     Type: String
     Default: master
-  ADUser:
-
 Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
