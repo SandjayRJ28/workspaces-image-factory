@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Continuous Delivery CodePipeline That builds and deploys AWS Workspaces Golden Images
+Description: Continuous Delivery CodePipeline That builds and deploys AWS Workspaces Golden Images.
 Parameters:
   RepoName:
     Type: String
