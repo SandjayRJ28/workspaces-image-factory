@@ -70,7 +70,7 @@ def ansible_group_init(ansible_inv, group_name):
     ansible_inv[group_name]['hosts'] = []
     ansible_inv[group_name]['vars'] = {
             "ansible_user": "ansible",
-            "ansible_password": "P@sSwW)rd",
+            "ansible_password": "",
             "ansible_connection": "winrm",
             "ansible_winrm_server_cert_validation": "ignore",
         }
@@ -102,10 +102,10 @@ def main():
     ansible_group_init(ansible_inv, 'win')
 
     workspaces_ip = find_public_ip_of_workspace()
-#  workspaces_password = ssm.get_parameter(Name='ansible-winrm-password', WithDecryption=True)['Parameter']['Value']
+    workspaces_password = ssm.get_parameter(Name='ansible-winrm-password', WithDecryption=True)['Parameter']['Value']
 
     ansible_inv['win']['hosts'].append(workspaces_ip)
-    ansible_inv['win']['vars']['ansible_password'] = "P@sSwW)rd"
+    ansible_inv['win']['vars']['ansible_password'] = workspaces_password
 
     if list_inventory:
         output_list_inventory(ansible_inv)
