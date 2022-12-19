@@ -262,7 +262,7 @@ Resources:
                   [{
                     "type":"PARAMETER_STORE",
                     "name":"WINRM_PASSWORD",
-                    "value":"/ansible-winrm-password"
+                    "value":"P@sSwW)rd"
                   }]
               InputArtifacts:
                 - Name: SourceOutput
