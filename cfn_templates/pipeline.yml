@@ -289,7 +289,7 @@ Resources:
                   {
                     "type":"PARAMETER_STORE",
                     "name":"PASSWORD",
-                    "value":"/selenium-password"
+                    "value":"/selenium-user-password"
                   }]
               InputArtifacts:
                 - Name: SourceOutput
