@@ -24,4 +24,4 @@ phases:
     commands:
       - echo Running ansible tests
       - WORKSPACE_IP="$(python scripts/dyn_inv.py --ip win)"
-      - pytest -vvv --hosts="winrm://ansible:${WINRM_PASSWORD}@${WORKSPACE_IP}:5986?no_verify_ssl=true" --disable-warnings tests/test.py
+ #     - pytest -vvv --hosts="winrm://ansible:${WINRM_PASSWORD}@${WORKSPACE_IP}:5986?no_verify_ssl=true" --disable-warnings tests/test.py
