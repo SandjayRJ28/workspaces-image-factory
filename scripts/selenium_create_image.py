@@ -31,12 +31,12 @@ def login_page(driver):
     WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located((By.ID, 'username')))
 
-    user = driver.find_element_by_id('username')
+    user = driver.find_element(By.ID, 'username')
     driver.implicitly_wait(20)
     user.send_keys(USERNAME)
     driver.implicitly_wait(20)
 
-    password = driver.find_element_by_id('password')
+    password = driver.find_element(By.ID, 'password')
     driver.implicitly_wait(20)
     password.send_keys(PASSWORD)
 
