@@ -6,7 +6,7 @@ Parameters:
     Default: workspaces-image-factory
   RepoOwner:
     Type: String
-    Default: verticalrelevance
+    Default: SandjayRJ28
   GitHubToken:
     Type: String
     NoEcho: true
