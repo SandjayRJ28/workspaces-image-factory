@@ -72,6 +72,8 @@ def ansible_group_init(ansible_inv, group_name):
             "ansible_user": "ansible",
             "ansible_password": "",
             "ansible_connection": "winrm",
+            "ansible_port": "5986",
+            "ansible_winrm_transport": "basic",
             "ansible_winrm_server_cert_validation": "ignore",
         }
 
