@@ -3,7 +3,7 @@ Resources:
   WorkspacesUser:
     Type: AWS::IAM::User
     Properties:
-      UserName: '{{resolve:ssm-secure:selenium-user-name:1}}'
+      UserName: '{{resolve:ssm:selenium-user-name:1}}'
       LoginProfile:
         Password: '{{resolve:ssm-secure:selenium-user-password:1}}'
       Policies:
