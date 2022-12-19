@@ -3,7 +3,7 @@ import testinfra
 
 
 @pytest.mark.parametrize("name,version", [
-    ("7zip", "18.5.0.20180730"),
+    ("7zip", "22.1"),
 ])
 def test_packages(host, name, version):
     pkg = host.package(name)
