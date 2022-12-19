@@ -41,7 +41,7 @@ def login_page(driver):
     password.send_keys(PASSWORD)
 
     driver.implicitly_wait(20)
-    driver.find_element_by_id("signin_button").click()
+    driver.find_element(By.ID, "signin_button").click()
 
 
 def navigate_to_workspaces(driver):
