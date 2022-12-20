@@ -15,7 +15,7 @@ phases:
       - which chromedriver
       - pip3 install selenium==4.2.0 boto3 retry
 
-  build:
-    commands:
-      - echo "Creating Image"
-      - python scripts/selenium_create_image.py
+#  build:
+#    commands:
+#      - echo "Creating Image"
+#      - python scripts/selenium_create_image.py
