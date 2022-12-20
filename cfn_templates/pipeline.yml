@@ -170,21 +170,21 @@ Resources:
         BuildSpec: buildspec_files/buildspec_install_ansible.yml
         Type: CODEPIPELINE
       TimeoutInMinutes: 30
-  CreateImageProject:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Description: Codebuild project to create a Workspace Image via Selenium
-      ServiceRole: !GetAtt CodeBuildRole.Arn
-      Artifacts:
-        Type: CODEPIPELINE
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/standard:4.0
-      Source:
-        BuildSpec: buildspec_files/buildspec_create_image.yml
-        Type: CODEPIPELINE
-      TimeoutInMinutes: 120
+#  CreateImageProject:
+#    Type: AWS::CodeBuild::Project
+#    Properties:
+#      Description: Codebuild project to create a Workspace Image via Selenium
+#      ServiceRole: !GetAtt CodeBuildRole.Arn
+#      Artifacts:
+#        Type: CODEPIPELINE
+#      Environment:
+#        Type: LINUX_CONTAINER
+#        ComputeType: BUILD_GENERAL1_SMALL
+#        Image: aws/codebuild/standard:4.0
+#      Source:
+#        BuildSpec: buildspec_files/buildspec_create_image.yml
+#        Type: CODEPIPELINE
+#      TimeoutInMinutes: 120
   MyCodePipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
@@ -266,33 +266,33 @@ Resources:
                   }]
               InputArtifacts:
                 - Name: SourceOutput
-            - Name: CreateImage
-              RunOrder: 3
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Version: 1
-                Provider: CodeBuild
-              Configuration:
-                ProjectName: !Ref CreateImageProject
-                EnvironmentVariables: |-
-                  [{
-                    "type":"PARAMETER_STORE",
-                    "name":"LOGIN_URL",
-                    "value":"/selenium-login-url"
-                  },
-                  {
-                    "type":"PARAMETER_STORE",
-                    "name":"USER_NAME",
-                    "value":"/selenium-user-name"
-                  },
-                  {
-                    "type":"PARAMETER_STORE",
-                    "name":"PASSWORD",
-                    "value":"/selenium-user-password"
-                  }]
-              InputArtifacts:
-                - Name: SourceOutput
+#            - Name: CreateImage
+#              RunOrder: 3
+#              ActionTypeId:
+#                Category: Build
+#                Owner: AWS
+#                Version: 1
+#                Provider: CodeBuild
+#              Configuration:
+#                ProjectName: !Ref CreateImageProject
+#                EnvironmentVariables: |-
+#                  [{
+#                    "type":"PARAMETER_STORE",
+#                    "name":"LOGIN_URL",
+#                    "value":"/selenium-login-url"
+#                  },
+#                  {
+#                    "type":"PARAMETER_STORE",
+#                    "name":"USER_NAME",
+#                    "value":"/selenium-user-name"
+#                  },
+#                  {
+#                    "type":"PARAMETER_STORE",
+#                    "name":"PASSWORD",
+#                    "value":"/selenium-user-password"
+#                  }]
+#              InputArtifacts:
+#                - Name: SourceOutput
         - Name: Publish
           Actions:
             - Name: TeardownWorkspace
