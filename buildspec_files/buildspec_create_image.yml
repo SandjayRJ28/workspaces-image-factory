@@ -13,7 +13,7 @@ phases:
       - which google-chrome
       - chromedriver --version
       - which chromedriver
-      - pip3 install selenium boto3 retry
+      - pip3 install selenium==4.2.0 boto3 retry
 
   build:
     commands:
