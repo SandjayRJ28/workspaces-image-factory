@@ -168,7 +168,7 @@ def main():
     # options.add_argument('window-size=1200x600')
 
     # initialize the driver
-    driver = webdriver.Chrome(chrome_options=options)
+    driver = webdriver.Chrome(options=options)
     driver.maximize_window()
 
     workspace_id = find_id_of_workspace()
@@ -189,12 +189,14 @@ def main():
         navigate_to_images(driver)
         wait_for_image(driver, image_name)
         create_bundle(driver, image_name)
+        driver.close()
     elif status == False:
         wait_for_image(driver, image_name)
         create_bundle(driver, image_name)
+        driver.close()
     else:
         create_bundle(driver, image_name)
-
+        driver.close()
 
 if __name__ == "__main__":
     main()
