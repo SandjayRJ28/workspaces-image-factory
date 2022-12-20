@@ -189,14 +189,11 @@ def main():
         navigate_to_images(driver)
         wait_for_image(driver, image_name)
         create_bundle(driver, image_name)
-        driver.close()
     elif status == False:
         wait_for_image(driver, image_name)
         create_bundle(driver, image_name)
-        driver.close()
     else:
         create_bundle(driver, image_name)
-        driver.close()
 
 if __name__ == "__main__":
     main()
