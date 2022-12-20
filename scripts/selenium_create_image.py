@@ -28,43 +28,43 @@ def find_id_of_workspace():
 def login_page(driver):
     # login_page method
     driver.get(LOGIN_URL)
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 40).until(
         EC.visibility_of_element_located((By.ID, 'username')))
 
     user = driver.find_element_by_id('username')
-    driver.implicitly_wait(20)
+    driver.implicitly_wait(50)
     user.send_keys(USERNAME)
-    driver.implicitly_wait(20)
+    driver.implicitly_wait(50)
 
     password = driver.find_element_by_id('password')
-    driver.implicitly_wait(20)
+    driver.implicitly_wait(50)
     password.send_keys(PASSWORD)
 
-    driver.implicitly_wait(20)
+    driver.implicitly_wait(50)
     driver.find_element_by_id("signin_button").click()
 
 
 def navigate_to_workspaces(driver):
     # workspaces_page method
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 40).until(
         EC.visibility_of_element_located((By.ID, 'nav-servicesMenu')))
     driver.find_element_by_id("nav-servicesMenu").click()
-    driver.implicitly_wait(5)
+    driver.implicitly_wait(35)
     driver.find_element_by_link_text("WorkSpaces").click()
 
 
 def navigate_to_images(driver):
     # navigate to bundles page
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 40).until(
         EC.visibility_of_element_located((By.LINK_TEXT, 'Images')))
     driver.find_element_by_link_text("Images").click()
 
 
 def check_image_status(driver, image_name):
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 40).until(
         EC.visibility_of_element_located((By.CSS_SELECTOR, 'div.NILBMCB-r-o table tbody:nth-child(3) tr')))
     rows = driver.find_elements_by_css_selector("div.NILBMCB-r-o table tbody:nth-child(3) tr")
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(40)
 
     for row in rows:
         cell = row.find_element_by_css_selector("td:nth-child(3)")
@@ -80,10 +80,10 @@ def check_image_status(driver, image_name):
 
 
 def create_bundle(driver, image_name):
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 40).until(
         EC.visibility_of_element_located((By.CSS_SELECTOR, 'div.NILBMCB-r-o table tbody:nth-child(3)')))
     rows = driver.find_elements_by_css_selector("div.NILBMCB-r-o table tbody:nth-child(3) tr")
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(40)
 
     for row in rows:
         cell = row.find_element_by_css_selector("td:nth-child(3)")
@@ -92,34 +92,34 @@ def create_bundle(driver, image_name):
             ActionChains(driver).move_to_element(check).click(check).perform()
 
     driver.find_element_by_css_selector("div.NILBMCB-r-a div.NILBMCB-r-x button").click()
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 40).until(
         EC.visibility_of_element_located((By.ID, 'createBundleButton')))
     driver.find_element_by_id("createBundleButton").click()
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 40).until(
         EC.visibility_of_element_located((By.CSS_SELECTOR, 'div.NILBMCB-j-r div div div:nth-child(4) table tbody tr:nth-child(1) td:nth-child(3) div.NILBMCB-Nb-h.NILBMCB-Nb-e input')))
 
     imageName = driver.find_element_by_css_selector("div.NILBMCB-j-r div div div:nth-child(4) table tbody tr:nth-child(1) td:nth-child(3) div.NILBMCB-Nb-h.NILBMCB-Nb-e input")
     imageName.send_keys('test-selenium-bundle-trader')
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(60)
     description = driver.find_element_by_css_selector("div.NILBMCB-j-r div div div:nth-child(5) table tbody tr:nth-child(1) td:nth-child(3) div.NILBMCB-Nb-h.NILBMCB-Nb-e input")
     description.send_keys('Test Trader Bundle')
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(60)
     select_fr = Select(driver.find_element_by_id("baseWorkspaceBundleListBoxId"))
     select_fr.select_by_value('VALUE')
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(60)
     volume_size = driver.find_element_by_css_selector("div.NILBMCB-j-r div div div:nth-child(8) table tbody tr:nth-child(1) td:nth-child(3) div.NILBMCB-Nb-h.NILBMCB-Nb-e input")
-    volume_size.send_keys('10')
-    driver.implicitly_wait(10)
+    volume_size.send_keys('60')
+    driver.implicitly_wait(60)
     driver.find_element_by_id("createBundleConfirmButtonId").click()
 
 
 
 
 def create_image(driver, workspace_id, image_name, image_description):
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 60).until(
         EC.visibility_of_element_located((By.CSS_SELECTOR, 'div.NILBMCB-r-o table tbody:nth-child(3) tr')))
     rows = driver.find_elements_by_css_selector("div.NILBMCB-r-o table tbody:nth-child(3) tr")
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(60)
 
     for row in rows:
         cell = row.find_element_by_css_selector("td:nth-child(3)")
@@ -129,22 +129,22 @@ def create_image(driver, workspace_id, image_name, image_description):
             ActionChains(driver).move_to_element(check).click(check).perform()
         
     driver.find_element_by_id("workspacesActionButton").click()
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 60).until(
         EC.visibility_of_element_located((By.ID, 'createImageButton')))
     driver.find_element_by_id("createImageButton").click()
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 60).until(
         EC.visibility_of_element_located((By.ID, 'createImageConfirmButton')))
     driver.find_element_by_id("createImageConfirmButton").click()
-    driver.implicitly_wait(5)
+    driver.implicitly_wait(50)
 
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 60).until(
         EC.visibility_of_element_located((By.CSS_SELECTOR, 'div.NILBMCB-j-r div div div:nth-child(3) div:nth-child(3) table tbody tr:nth-child(1) td:nth-child(3) div.NILBMCB-Nb-h.NILBMCB-Nb-e input')))
     imageName = driver.find_element_by_css_selector("div.NILBMCB-j-r div div div:nth-child(3) div:nth-child(3) table tbody tr:nth-child(1) td:nth-child(3) div.NILBMCB-Nb-h.NILBMCB-Nb-e input")
     imageName.send_keys(image_name)
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(60)
     description = driver.find_element_by_css_selector("div.NILBMCB-j-r div div div:nth-child(3) div:nth-child(4) table tbody tr:nth-child(1) td:nth-child(3) div.NILBMCB-Nb-h.NILBMCB-Nb-e input")
     description.send_keys(image_description)
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(60)
     driver.find_element_by_id("createImageConfirmButton").click()
 
 
@@ -175,17 +175,17 @@ def main():
     image_name = 'test-selenium-image'
     image_description = 'Test Description'
 
-    driver.implicitly_wait(20)
+    driver.implicitly_wait(50)
     login_page(driver)
-    driver.implicitly_wait(20)
+    driver.implicitly_wait(50)
     navigate_to_workspaces(driver)
-    driver.implicitly_wait(20)
+    driver.implicitly_wait(50)
     navigate_to_images(driver)
     status = check_image_status(driver, image_name)
     if status is None:
         navigate_to_workspaces(driver)
         create_image(driver, workspace_id, image_name, image_description)
-        driver.implicitly_wait(20)
+        driver.implicitly_wait(50)
         navigate_to_images(driver)
         wait_for_image(driver, image_name)
         create_bundle(driver, image_name)
