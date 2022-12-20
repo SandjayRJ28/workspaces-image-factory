@@ -31,24 +31,24 @@ def login_page(driver):
     WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located((By.ID, 'username')))
 
-    user = driver.find_element(By.ID, 'username')
+    user = driver.find_element_by_id('username')
     driver.implicitly_wait(20)
     user.send_keys(USERNAME)
     driver.implicitly_wait(20)
 
-    password = driver.find_element(By.ID, 'password')
+    password = driver.find_element_by_id('password')
     driver.implicitly_wait(20)
     password.send_keys(PASSWORD)
 
     driver.implicitly_wait(20)
-    driver.find_element(By.ID, "signin_button").click()
+    driver.find_element_by_id("signin_button").click()
 
 
 def navigate_to_workspaces(driver):
     # workspaces_page method
     WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located((By.ID, 'nav-servicesMenu')))
-    driver.find_element(By.ID, "nav-servicesMenu").click()
+    driver.find_element_by_id("nav-servicesMenu").click()
     driver.implicitly_wait(5)
     driver.find_element_by_link_text("WorkSpaces").click()
 
@@ -94,7 +94,7 @@ def create_bundle(driver, image_name):
     driver.find_element_by_css_selector("div.NILBMCB-r-a div.NILBMCB-r-x button").click()
     WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located((By.ID, 'createBundleButton')))
-    driver.find_element(By.ID, "createBundleButton").click()
+    driver.find_element_by_id("createBundleButton").click()
     WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located((By.CSS_SELECTOR, 'div.NILBMCB-j-r div div div:nth-child(4) table tbody tr:nth-child(1) td:nth-child(3) div.NILBMCB-Nb-h.NILBMCB-Nb-e input')))
 
@@ -104,13 +104,13 @@ def create_bundle(driver, image_name):
     description = driver.find_element_by_css_selector("div.NILBMCB-j-r div div div:nth-child(5) table tbody tr:nth-child(1) td:nth-child(3) div.NILBMCB-Nb-h.NILBMCB-Nb-e input")
     description.send_keys('Test Trader Bundle')
     driver.implicitly_wait(10)
-    select_fr = Select(driver.find_element(By.ID, "baseWorkspaceBundleListBoxId"))
+    select_fr = Select(driver.find_element_by_id("baseWorkspaceBundleListBoxId"))
     select_fr.select_by_value('VALUE')
     driver.implicitly_wait(10)
     volume_size = driver.find_element_by_css_selector("div.NILBMCB-j-r div div div:nth-child(8) table tbody tr:nth-child(1) td:nth-child(3) div.NILBMCB-Nb-h.NILBMCB-Nb-e input")
     volume_size.send_keys('10')
     driver.implicitly_wait(10)
-    driver.find_element(By.ID, "createBundleConfirmButtonId").click()
+    driver.find_element_by_id("createBundleConfirmButtonId").click()
 
 
 
@@ -128,13 +128,13 @@ def create_image(driver, workspace_id, image_name, image_description):
             check = row.find_element_by_css_selector("td")
             ActionChains(driver).move_to_element(check).click(check).perform()
         
-    driver.find_element(By.ID, "workspacesActionButton").click()
+    driver.find_element_by_id("workspacesActionButton").click()
     WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located((By.ID, 'createImageButton')))
-    driver.find_element(By.ID, "createImageButton").click()
+    driver.find_element_by_id("createImageButton").click()
     WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located((By.ID, 'createImageConfirmButton')))
-    driver.find_element(By.ID, "createImageConfirmButton").click()
+    driver.find_element_by_id("createImageConfirmButton").click()
     driver.implicitly_wait(5)
 
     WebDriverWait(driver, 10).until(
@@ -145,7 +145,7 @@ def create_image(driver, workspace_id, image_name, image_description):
     description = driver.find_element_by_css_selector("div.NILBMCB-j-r div div div:nth-child(3) div:nth-child(4) table tbody tr:nth-child(1) td:nth-child(3) div.NILBMCB-Nb-h.NILBMCB-Nb-e input")
     description.send_keys(image_description)
     driver.implicitly_wait(10)
-    driver.find_element(By.ID, "createImageConfirmButton").click()
+    driver.find_element_by_id("createImageConfirmButton").click()
 
 
 def wait_for_image(driver, image_name):
@@ -168,7 +168,7 @@ def main():
     # options.add_argument('window-size=1200x600')
 
     # initialize the driver
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(chrome_options=options)
     driver.maximize_window()
 
     workspace_id = find_id_of_workspace()
@@ -194,6 +194,7 @@ def main():
         create_bundle(driver, image_name)
     else:
         create_bundle(driver, image_name)
+
 
 if __name__ == "__main__":
     main()
