@@ -34,6 +34,7 @@ Resources:
               Resource: "*"
   WorkspaceServiceRole:
     Type: AWS::IAM::Role
+    DeletionPolicy: Retain
     Properties:
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
