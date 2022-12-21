@@ -126,36 +126,36 @@ Resources:
         BuildSpec: buildspec_files/buildspec_setup_workstation.yml
         Type: CODEPIPELINE
       TimeoutInMinutes: 45
-  TeardownWorkspaceProject:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Description: Codebuild project to tear down Workspace
-      ServiceRole: !GetAtt CodeBuildRole.Arn
-      Artifacts:
-        Type: CODEPIPELINE
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/python:3.8.3
-      Source:
-        BuildSpec: buildspec_files/buildspec_teardown_workspace.yml
-        Type: CODEPIPELINE
-      TimeoutInMinutes: 30
-  PublishToServiceCatalogProject:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Description: Codebuild project to publish finished bundle to service catalog
-      ServiceRole: !GetAtt CodeBuildRole.Arn
-      Artifacts:
-        Type: CODEPIPELINE
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/python:3.8.3
-      Source:
-        BuildSpec: buildspec_files/buildspec_publish_servicecatalog.yml
-        Type: CODEPIPELINE
-      TimeoutInMinutes: 30
+  #TeardownWorkspaceProject:
+   # Type: AWS::CodeBuild::Project
+    #Properties:
+     # Description: Codebuild project to tear down Workspace
+     # ServiceRole: !GetAtt CodeBuildRole.Arn
+     # Artifacts:
+     #   Type: CODEPIPELINE
+     # Environment:
+     #   Type: LINUX_CONTAINER
+     #   ComputeType: BUILD_GENERAL1_SMALL
+     #   Image: aws/codebuild/python:3.8.3
+     # Source:
+     #   BuildSpec: buildspec_files/buildspec_teardown_workspace.yml
+     #   Type: CODEPIPELINE
+     # TimeoutInMinutes: 30
+  #PublishToServiceCatalogProject:
+  #  Type: AWS::CodeBuild::Project
+  #  Properties:
+  #    Description: Codebuild project to publish finished bundle to service catalog
+  #    ServiceRole: !GetAtt CodeBuildRole.Arn
+  #    Artifacts:
+  #      Type: CODEPIPELINE
+  #    Environment:
+  #      Type: LINUX_CONTAINER
+  #      ComputeType: BUILD_GENERAL1_SMALL
+  #      Image: aws/codebuild/python:3.8.3
+  #    Source:
+  #      BuildSpec: buildspec_files/buildspec_publish_servicecatalog.yml
+  #      Type: CODEPIPELINE
+  #    TimeoutInMinutes: 30
   InstallAnsibleProject:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -294,33 +294,33 @@ Resources:
 #                  }]
 #              InputArtifacts:
 #                - Name: SourceOutput
-        - Name: Publish
-          Actions:
-            - Name: TeardownWorkspace
-              RunOrder: 1
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Version: 1
-                Provider: CodeBuild
-              Configuration:
-                ProjectName: !Ref TeardownWorkspaceProject
-              InputArtifacts:
-                - Name: SourceOutput
-            - Name: PublishToServiceCatalog
-              RunOrder: 1
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Version: 1
-                Provider: CodeBuild
-              Configuration:
-                ProjectName: !Ref PublishToServiceCatalogProject
-                EnvironmentVariables: |-
-                  [{
-                    "type":"PARAMETER_STORE",
-                    "name":"PRODUCT_ID",
-                    "value":"/workspaces/sc-product-id-trader"
-                  }]
-              InputArtifacts:
-                - Name: SourceOutput
+#        - Name: Publish
+#         Actions:
+#            - Name: TeardownWorkspace
+#              RunOrder: 1
+#              ActionTypeId:
+#                Category: Build
+#                Owner: AWS
+#                Version: 1
+#                Provider: CodeBuild
+#              Configuration:
+#                ProjectName: !Ref TeardownWorkspaceProject
+#              InputArtifacts:
+#                - Name: SourceOutput
+#            - Name: PublishToServiceCatalog
+#              RunOrder: 1
+#              ActionTypeId:
+#                Category: Build
+#                Owner: AWS
+#                Version: 1
+#                Provider: CodeBuild
+#              Configuration:
+#                ProjectName: !Ref PublishToServiceCatalogProject
+#                EnvironmentVariables: |-
+#                  [{
+#                   "type":"PARAMETER_STORE",
+#                    "name":"PRODUCT_ID",
+#                    "value":"/workspaces/sc-product-id-trader"
+#                  }]
+#              InputArtifacts:
+#                - Name: SourceOutput
