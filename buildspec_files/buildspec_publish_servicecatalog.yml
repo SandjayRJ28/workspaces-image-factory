@@ -12,7 +12,7 @@ phases:
       - echo Started on `date`
       - echo Publishing to Bundle to Service Catalog...
       #- BUNDLE_ID="$(aws workspaces describe-workspace-bundles --query 'Bundles[?Name==`test-selenium-bundle-trader`].BundleId' --output text)"
-      - python3 scripts/publish_to_servicecatalog.py --bundleid $BUNDLE_ID --bucket cf-templates-servicecatalog
+      #- python3 scripts/publish_to_servicecatalog.py --bundleid $BUNDLE_ID --bucket cf-templates-servicecatalog
   post_build:
     commands:
       - echo completed on `date`
