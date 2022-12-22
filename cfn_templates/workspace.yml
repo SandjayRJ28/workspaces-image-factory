@@ -21,5 +21,5 @@ Resources:
       UserName: !Ref "ADUser"
 Outputs:
   workspaceId:
-    Value: !Ref workspace2
+    Value: !Ref workspace1
     Description: WorkspaceID
