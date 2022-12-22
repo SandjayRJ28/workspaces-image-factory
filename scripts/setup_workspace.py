@@ -5,7 +5,7 @@ import json
 
 def find_id_of_workspace():
     cloudformation = boto3.resource('cloudformation')
-    stack = cloudformation.Stack('WorkspaceBuilder2')
+    stack = cloudformation.Stack('WorkspaceBuilder')
     stack_resource = stack.Resource('workspace2').physical_resource_id
     return stack_resource
 
